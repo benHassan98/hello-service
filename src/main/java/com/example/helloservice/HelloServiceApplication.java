@@ -2,7 +2,7 @@ package com.example.helloservice;
 
 //import jakarta.persistence.EntityManager;
 //import jakarta.persistence.PersistenceContext;
-//import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -20,8 +20,8 @@ public class HelloServiceApplication {
     private String t;
 //    @PersistenceContext
 //    private EntityManager entityManager;
-//    @Autowired
-//    private RabbitAdmin rabbitAdmin;
+    @Autowired
+    private RabbitAdmin rabbitAdmin;
 
     public static void main(String[] args) {
         SpringApplication.run(HelloServiceApplication.class, args);
@@ -30,11 +30,11 @@ public class HelloServiceApplication {
     @GetMapping("/")
     public String hello(){
 //        List<Object[]> objects = entityManager.createNativeQuery("select * from accounts").getResultList();
-//        var x =  rabbitAdmin.getQueueInfo("odinBook.accountChannel");
+        var x =  rabbitAdmin.getQueueInfo("odinBook.accountChannel");
 //
 //
 //        return t+" "+objects.get(0)[0]+" "+x.getName();
-        return t+" Hello";
+        return t+" Hello "+x.getName();
     }
 
 }
