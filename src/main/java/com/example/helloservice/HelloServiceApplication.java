@@ -2,6 +2,7 @@ package com.example.helloservice;
 
 //import jakarta.persistence.EntityManager;
 //import jakarta.persistence.PersistenceContext;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 @SpringBootApplication
 @RestController
@@ -27,14 +29,29 @@ public class HelloServiceApplication {
         SpringApplication.run(HelloServiceApplication.class, args);
     }
 
-    @GetMapping("/")
+    @GetMapping("/create")
+    public String create(){
+        rabbitAdmin.declareQueue(new Queue("testQueue"));
+
+        return "creating ....";
+    }
+
+
+    @GetMapping("/get")
     public String hello(){
 //        List<Object[]> objects = entityManager.createNativeQuery("select * from accounts").getResultList();
-        var x =  rabbitAdmin.getQueueInfo("odinBook.accountChannel");
+
+        var x =  rabbitAdmin.getQueueInfo("testQueue");
 //
 //
 //        return t+" "+objects.get(0)[0]+" "+x.getName();
-        return t+" Hello "+x.getName();
+        if(Objects.nonNull(x)){
+            return t+" Hello "+x.getName();
+        }
+        else{
+            return t+" Hello without x";
+        }
+
     }
 
 }
