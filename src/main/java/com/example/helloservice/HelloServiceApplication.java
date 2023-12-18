@@ -1,7 +1,8 @@
 package com.example.helloservice;
 
-//import jakarta.persistence.EntityManager;
-//import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ import java.util.Objects;
 public class HelloServiceApplication {
     @Value("${test.url}")
     private String t;
-//    @PersistenceContext
-//    private EntityManager entityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     private RabbitAdmin rabbitAdmin;
 
@@ -29,15 +30,30 @@ public class HelloServiceApplication {
         SpringApplication.run(HelloServiceApplication.class, args);
     }
 
-    @GetMapping("/create")
+    @GetMapping("/createQueue")
     public String create(){
         rabbitAdmin.declareQueue(new Queue("testQueue"));
 
-        return "creating ....";
+        return "creating Queue ....";
+    }
+
+    @GetMapping("/createRow")
+    @Transactional
+    public String create2(){
+        entityManager
+                .createNativeQuery("insert into accounts(fullname, username, email, roles, password) values(:fullname, :username, :email, :roles, :password)")
+                .setParameter("fullname", "fullname")
+                .setParameter("username", "username")
+                .setParameter("email","email")
+                .setParameter("roles","ROLE_USER")
+                .setParameter("password","password")
+                .executeUpdate();
+
+        return "creating Row....";
     }
 
 
-    @GetMapping("/get")
+    @GetMapping("/getQueue")
     public String hello(){
 //        List<Object[]> objects = entityManager.createNativeQuery("select * from accounts").getResultList();
 
@@ -51,6 +67,15 @@ public class HelloServiceApplication {
         else{
             return t+" Hello without x";
         }
+
+    }
+    @GetMapping("/getRow")
+    @Transactional
+    public String hello2(){
+        List<Object[]> objects = entityManager.createNativeQuery("select * from accounts").getResultList();
+
+        return t+" "+objects.get(0)[0];
+
 
     }
 
