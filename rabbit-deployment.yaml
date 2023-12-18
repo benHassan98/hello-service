@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbit-deployment
+spec:
+  selector:
+    matchLabels:
+      app: rabbit-pod
+  template:
+    metadata:
+      labels:
+        app: rabbit-pod
+    spec:
+      containers:
+      - name: rabbit-container
+        image: rabbitmq:3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbit-service
+spec:
+  selector:
+    app: rabbit-pod
+  ports:
+  - name: rabbit-service-port
+    protocol: TCP
+    port: 5672
+    targetPort: 5672
+                         
